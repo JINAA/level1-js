@@ -7,7 +7,7 @@ catImage[0] = new Image();
 catImage[1] = new Image();
 catImage[0].src = "cat1.png";
 catImage[1].src = "cat2.png";
-
+	
 //고양이 사이즈와 초기좌표
 var catwidth = 90;
 var catheight = 90;
@@ -15,50 +15,56 @@ var catX = 100;
 var catY = 220;
 
 //고양이 움직임
-var dx = 2;
-var dy = -130;
+var dx = 0;
+var dy = -7;
 
-//고양이 로드시키기
-var catImageLoad = false;
-catImage.onload = function () {
-	catImage = true;
-};
-
+//고양이 중력
+var g = 0.2;
 
 //배경그리기	
 function drawbg() {
 	ctx.fillStyle = "lavender";
-	ctx.fillRect(10,10,500,500);
+	ctx.fillRect(10,10,canvas.width,canvas.height);
 }
 
-//고양이 점프
-function jump() {
-	if (catY > canvas.height / 2) {
-		catY += dy;
-		return catY;
-	}
-}
 
-//고양이 그리기
+//뛰는 고양이 그리기
 var count = 0;
+var idx = 0;
+var delay = 10;
+
 function drawcat() {
-	count++;
-	if (count >= 3){
-		ctx.drawImage(catImage[0],catX,catY,catwidth,catheight);
-	} else {
-		ctx.drawImage(catImage[1],catX,catY,catwidth,catheight);
+	ctx.clearRect(0,0,canvas.width,canvas.height);
+	drawbg();
+	
+	catX += dx;
+	dy = dy + g;
+	catY += + dy;
+
+	if (catX >= 500 || catX <= 0) {
+		dx = -dx;
+	}
+	if(catY >= 200) {
+		catY = 200;
 	}
 
-	if (count == 6)
-		count = 0;
+	count++;
+	if (count >= delay) {
+		idx++;
+		if (idx > 1) {
+			idx = 0;
+		}
+	count = 0;
+	}
+
+	if (catY != 200) {
+		ctx.drawImage(catImage[0],catX,catY,catwidth,catheight);	
+	} else {
+		ctx.drawImage(catImage[idx],catX,catY,catwidth,catheight);	
+
+	}
+	requestAnimationFrame(drawcat);
+	
 }
 
-//그린이미지실행
-function drawAll() {
-	drawbg();
-	drawcat();
-}
-
-
-
-setInterval(drawAll, 60);
+requestAnimationFrame(drawcat);
